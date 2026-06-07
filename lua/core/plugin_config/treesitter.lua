@@ -1,14 +1,21 @@
-require'nvim-treesitter.configs'.setup {
-  -- A list of parser names, or "all"
-  ensure_installed = { "c", "lua", "rust", "ruby", "vim", "html" },
+local treesitter = require("nvim-treesitter")
 
-  -- Install parsers synchronously (only applied to `ensure_installed`)
-  sync_install = false,
-  auto_install = true,
-  highlight = {
-    enable = true,
-  },
-  indent = {
-    enable = true,
-  },
-}
+treesitter.setup({
+  install_dir = vim.fn.stdpath("data") .. "/site",
+})
+
+local treesitter_augroup = vim.api.nvim_create_augroup("UserTreeSitterConfig", { clear = true })
+local filetypes = { "c", "lua", "rust", "ruby", "vim", "html" }
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = treesitter_augroup,
+  pattern = filetypes,
+  callback = function(event)
+    local bufnr = event.buf
+    local ok = pcall(vim.treesitter.start, bufnr)
+
+    if ok then
+      vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
+  end,
+})

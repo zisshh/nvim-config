@@ -1,18 +1,7 @@
-require("mason-lspconfig").setup({
-  ensure_installed = { "lua_ls", "solargraph", "tsserver" }
-})
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-local lspconfig = require('lspconfig')
-
-local lsp_defaults = lspconfig.util.default_config
-
-lsp_defaults.capabilities = vim.tbl_deep_extend(
-  'force',
-  lsp_defaults.capabilities,
-  require('cmp_nvim_lsp').default_capabilities()
-)
-
-require("lspconfig").lua_ls.setup {
+vim.lsp.config("lua_ls", {
+  capabilities = capabilities,
   settings = {
     Lua = {
       diagnostics = {
@@ -20,18 +9,29 @@ require("lspconfig").lua_ls.setup {
       },
       workspace = {
         library = {
-          [vim.fn.expand "$VIMRUNTIME/lua"] = true,
-          [vim.fn.stdpath "config" .. "/lua"] = true,
+          [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+          [vim.fn.stdpath("config") .. "/lua"] = true,
         },
       },
     },
-  }
-}
+  },
+})
 
-require("lspconfig").solargraph.setup({})
-require("lspconfig").tsserver.setup({})
-require("lspconfig").gopls.setup({})
-require("lspconfig").tailwindcss.setup({})
+vim.lsp.config("ts_ls", {
+  capabilities = capabilities,
+})
+
+vim.lsp.config("gopls", {
+  capabilities = capabilities,
+})
+
+vim.lsp.config("tailwindcss", {
+  capabilities = capabilities,
+})
+
+require("mason-lspconfig").setup({
+  ensure_installed = { "lua_ls", "ts_ls", "gopls", "tailwindcss" },
+})
 
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
