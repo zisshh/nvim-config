@@ -22,3 +22,10 @@ cmp.setup({
     { name = 'buffer' },
   }),
 })
+
+-- auto-pairs: () [] {} "" '' auto-close
+require("nvim-autopairs").setup({})
+
+-- after completing a function from cmp, auto-insert ()
+local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
